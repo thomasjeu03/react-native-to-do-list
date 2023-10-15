@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     borderWidth: 2,
-    borderRadius: '8',
+    borderRadius: 8,
     borderColor: '#45454d',
     padding: 12,
     marginTop: 16,
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     task: {
       width: '100%',
       color: '#e9e9ec',
-      borderRadius: '8',
+      borderRadius: 8,
       padding: 8,
       marginTop: 8,
       display: "flex",
