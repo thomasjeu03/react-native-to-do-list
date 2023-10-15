@@ -1,29 +1,58 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View, TextInput, Button, FlatList, Switch, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App() {
-  const [task, setTask] = useState(''); // État pour stocker la tâche en cours d'ajout
-  const [tasks, setTasks] = useState([]); // Tableau pour stocker la liste de tâches
+  const [task, setTask] = useState('');
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        const savedTasks = await AsyncStorage.getItem('tasks');
+        if (savedTasks !== null) {
+          setTasks(JSON.parse(savedTasks));
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des tâches : ', error);
+      }
+    };
+    loadTasks();
+  }, []);
 
   const addTask = () => {
     if (task) {
-      setTasks([...tasks, { text: task, key: Date.now(), selected: false }]);
+      const newTask = { text: task, key: Date.now(), selected: false };
+      setTasks([...tasks, newTask]);
+      saveTasks([...tasks, newTask]);
       setTask('');
     }
   };
 
   const toggleTask = (key) => {
-    setTasks(tasks.map(task => {
+    const updatedTasks = tasks.map(task => {
       if (task.key === key) {
         task.selected = !task.selected;
       }
       return task;
-    }));
+    });
+    setTasks(updatedTasks);
+    saveTasks(updatedTasks);
   };
 
   const deleteTasks = () => {
-    setTasks(tasks.filter(task => !task.selected));
+    const updatedTasks = tasks.filter(task => !task.selected);
+    setTasks(updatedTasks);
+    saveTasks(updatedTasks);
+  };
+
+  const saveTasks = async (tasksToSave) => {
+    try {
+      await AsyncStorage.setItem('tasks', JSON.stringify(tasksToSave));
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde des tâches : ', error);
+    }
   };
 
   return (
